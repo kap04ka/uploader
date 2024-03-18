@@ -18,5 +18,3 @@ C:\Users\Kapa\source\repos\uploader\uploader\obj\Debug\net7.0-windows\refint\upl
 C:\Users\Kapa\source\repos\uploader\uploader\obj\Debug\net7.0-windows\uploader.pdb
 C:\Users\Kapa\source\repos\uploader\uploader\obj\Debug\net7.0-windows\uploader.genruntimeconfig.cache
 C:\Users\Kapa\source\repos\uploader\uploader\obj\Debug\net7.0-windows\ref\uploader.dll
-C:\Users\Kapa\source\repos\uploader\uploader\obj\Debug\net7.0-windows\UpdatingProcess.g.cs
-C:\Users\Kapa\source\repos\uploader\uploader\obj\Debug\net7.0-windows\UpdatingProcess.baml

@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Windows;
@@ -21,6 +18,8 @@ namespace uploader
         private string currentVersion;
         private string newVersion;
 
+        View view;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,6 +28,8 @@ namespace uploader
             versionPath = Path.Combine(rootPath, "Version.txt");
             currentVersion = File.ReadAllText(versionPath);
             zipPath = Path.Combine(rootPath, "Build.zip");
+            view = new View();
+            DataContext = view;
 
             curVer.Text = "Текущая версия: " + currentVersion;
         }
@@ -45,11 +46,9 @@ namespace uploader
                     var result = MessageBox.Show($"Доступна версия {newVersion}. Обновить?", "", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
-                        UpdatingProcess loadingWindow = new UpdatingProcess(newVersion, rootPath, zipPath, versionPath);
-
-                        loadingWindow.Owner = this;
-
-                        loadingWindow.Show();
+                        uploadingBar.Visibility = Visibility.Visible;
+                        Upload();
+                        
                     }
 
                 }
@@ -59,6 +58,37 @@ namespace uploader
                 }
 
             }
+        }
+
+        public void Upload()
+        {
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadProgressChanged += (s, e) => view.progress = e.ProgressPercentage;
+                client.DownloadProgressChanged += (s, e) => view.speedCalculate(e.BytesReceived);
+                client.DownloadFileCompleted += (s, e) =>
+                {
+                    UploadCompleted();
+                    MessageBox.Show("Загрузка завершена");
+                    UpdateForm();
+                };
+
+                client.DownloadFileAsync(new System.Uri("https://drive.google.com/uc?export=download&id=1wShEa8ju41uabVel8N0iHXuokWWyZdoi"), zipPath);
+            }
+        }
+
+        public void UploadCompleted()
+        {
+            ZipFile.ExtractToDirectory(zipPath, rootPath, true);
+            File.Delete(zipPath);
+            File.WriteAllText(versionPath, newVersion);
+        }
+
+        public void UpdateForm()
+        {
+            curVer.Text = "Текущая версия: " + newVersion;
+            uploadingBar.Visibility = Visibility.Hidden;
+            uploadingSpeed.Text = "";
         }
     }
 }
